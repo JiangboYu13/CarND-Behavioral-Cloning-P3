@@ -1,5 +1,5 @@
-./data
+./data/*
 
-./examples
+./examples/*
 
-./run1
+./run1/*
