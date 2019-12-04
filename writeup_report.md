@@ -1,8 +1,7 @@
 # **Behavioral Cloning** 
 
-## Writeup Template
+## Writeup 
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
@@ -18,14 +17,23 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[centre]: ./report_img/center.jpg "Centre camera image"
+[centre_flip]: ./report_img/center_flip.jpg "Flipped centre image"
+[centre_grayscale]: ./report_img/center_grayscale.jpg "Centre image in grayscale"
+[centre_crop]: ./report_img/center_crop_grayscale.jpg "Cropped centre image"
 
+[left]: ./report_img/left.jpg "Left camera image"
+[left_flip]: ./report_img/left_flip.jpg "Flipped left image"
+[left_grayscale]: ./report_img/left_grayscale.jpg "left image in grayscale"
+[left_crop]: ./report_img/left_crop_grayscale.jpg "Cropped left image"
+
+
+[right]: ./report_img/right.jpg "right camera image"
+[right_flip]: ./report_img/right_flip.jpg "Flipped right image"
+[right_grayscale]: ./report_img/right_grayscale.jpg "right image in grayscale"
+[right_crop]: ./report_img/right_crop_grayscale.jpg "Cropped right image"
+
+[model_arc]: ./report_img/model_architecture.png "Model Architecture"
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
@@ -35,7 +43,10 @@ The goals / steps of this project are the following:
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
+* model.py containing the script to create and train the model 
+```sh
+python model.py -d folder_contain_csv1 folder_contain_csv2 -m pre_trained_model_file_for_transfer_learning  
+```
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
@@ -48,7 +59,12 @@ python drive.py model.h5
 
 #### 3. Submission code is usable and readable
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model defined in function
+```python
+def NvidiaModel(input):
+	...
+```
+and it contains comments to explain how the code works.
 
 ### Model Architecture and Training Strategy
 
