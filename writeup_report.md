@@ -70,9 +70,20 @@ and it contains comments to explain how the code works.
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+The overall architecture of the model I adopted is illustarted as below:
+![Network Architeture][model_arc]
+The input images are of size 320x160 with rgb channel. The network first uses lambda layers to convert rgb image to grayscale image and normalize them 
+```python
+normalized = Lambda(lambda image: tf.image.rgb_to_grayscale(image)/255-0.5)(input)
+```
+and then uses an Cropping2D layer to discard uninterested area on images:
+```python
+cropped = Cropping2D(cropping=((50,20), (0,0)))(normalized)
+```
+The network consists of 3 5x5 convolution layers with stride of 2 and 2 3x3 convolution layers with stride 1, followed by 3 fully connected layer with output size 100, 50, 10 respectively and out layer which output a number representing the steering angle. 
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+
+The model includes RELU layers to introduce nonlinearity after each convolution layers and fully connected layers.
 
 #### 2. Attempts to reduce overfitting in the model
 
