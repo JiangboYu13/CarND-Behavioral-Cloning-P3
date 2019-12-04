@@ -1,6 +1,7 @@
 from keras.layers import Input, Lambda, Flatten, \
                         Dense, GlobalAveragePooling2D, Conv2D,Cropping2D
 from keras.models import Model, load_model
+from keras.utils import plot_model
 import argparse
 import os
 import cv2
@@ -12,8 +13,8 @@ import h5py
 from keras import __version__ as keras_version
 import tensorflow as tf
 from PIL import Image
-
-
+import matplotlib.pyplot as plt
+#Model Architure
 def NvidiaModel(input):
     normalized = Lambda(lambda image: tf.image.rgb_to_grayscale(image)/255-0.5)(input)
     cropped = Cropping2D(cropping=((50,20), (0,0)))(normalized)
@@ -38,6 +39,7 @@ def generator(samples, batch_size=32):
             images = []
             angles = []
             for batch_sample in batch_samples:
+                #Train model using left/centre/right view image and flip the images to augment the training data
                 for idx in range(3):
                     if os.path.isabs(batch_sample[idx]):
                         img_name = batch_sample[idx]
@@ -74,6 +76,7 @@ if __name__ == '__main__':
         type=str,
         nargs='*',
         help='Original Model')
+    
     args = parser.parse_args()
     csv_dirs = args.dir
     samples = []
@@ -81,7 +84,7 @@ if __name__ == '__main__':
         with open(os.path.join(csv_dir, 'driving_log.csv')) as csvfile:
             reader = csv.reader(csvfile)
             for line in reader:
-                if line[0] == 'center':
+                if line[0] == 'center':#discard title line in csv file
                     continue
                 samples.append(line)
 
@@ -89,22 +92,22 @@ if __name__ == '__main__':
     batch_size=128
     train_generator = generator(train_samples, batch_size=batch_size, )
     validation_generator = generator(validation_samples, batch_size=batch_size)
-   
+    #Train from pre-trained model (transfer learning)
     if args.model is not None:
+        print("Using Pre-trained Model")
         model = load_model(args.model[0])
         for layer in model.layers:
             if 'conv2d' in layer.name:
                 layer.trainable=False
-    else:
+    else:#Retrain the model
         input = Input((160, 320, 3))
         output = NvidiaModel(input)
         model = Model(inputs=input, outputs=output)
         model.compile(loss='mse', optimizer='adam')
-    model.fit_generator(train_generator, \
+    history_object = model.fit_generator(train_generator, \
                         steps_per_epoch=np.ceil(len(train_samples)/batch_size*2), \
                         validation_data=validation_generator, \
                         validation_steps=np.ceil(len(validation_samples)/batch_size*2), \
                         epochs=5, verbose=1)
-    model.save('model.h5')
-    
+    model.save('TEST.h5')
  
