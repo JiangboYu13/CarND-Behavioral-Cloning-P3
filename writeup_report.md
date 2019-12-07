@@ -142,7 +142,7 @@ To capture good driving behavior, I used the example training dataset(left, cent
 
 ![left image][left]
 
-- Cnetre image
+- Centre image
 
 ![centre image][centre]
 
