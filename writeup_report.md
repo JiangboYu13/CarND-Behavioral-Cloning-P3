@@ -34,6 +34,10 @@ The goals / steps of this project are the following:
 [right_crop]: ./report_img/right_crop_grayscale.jpg "Cropped right image"
 
 [model_arc]: ./report_img/model_architecture.png "Model Architecture"
+
+[dirt_section]: ./report_img/dirt.jpg "Dirt section"
+[sharp_curve]: ./report_img/sharp_curve.jpg "Sharp curve"
+
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
@@ -72,6 +76,7 @@ and it contains comments to explain how the code works.
 
 The overall architecture of the model I adopted is illustarted as below:
 ![Network Architeture][model_arc]
+
 The input images are of size 320x160 with rgb channel. The network first uses lambda layers to convert rgb image to grayscale image and normalize them 
 ```python
 normalized = Lambda(lambda image: tf.image.rgb_to_grayscale(image)/255-0.5)(input)
@@ -87,17 +92,17 @@ The model includes RELU layers to introduce nonlinearity after each convolution 
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+To reduce the overfitting in model, I tried to collect enough data until the MSE is both less than 0.02 for training dataset and validation dataset. 
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting. The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually.
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road. When the trained model had bad performance in certain portion of the track, I collected more data near that portion to improve the performance. 
 
 For details about how I created the training data, see the next section. 
 
@@ -105,52 +110,64 @@ For details about how I created the training data, see the next section.
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The model architeture used for this project is described in *end to end leaning for self-driving car* published by Nvidia engineers. The modifications made on the original network are
+- adding one lambda layer to convet rgb image to grayscale image and normalize it
+- adding one cropping layer to remove uninterest area on image.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+The detail architeture of model has been present in last secion.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+The training dataset used for first attempt was the data already provided.
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. 
+To augment the training dataset, all three camera images, left right and centre, were used to train the model. the steering angle for left and right image are derived from steering angle of centre image as below:
+```python
+left_angle=min(centre_angle + 0.2, 1)
+right_angle=max(centre_angle - 0.2, -1)
+```
+To further augment the training dataset, the original images (for left, centre and right) were flipped horizontally and the steering angles were sign-reversed.
 
-To combat the overfitting, I modified the model so that ...
+The final step was to run the simulator to see how well the car was driving around track one. There were a few spots shown in figures below where the vehicle fell off the track.
 
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+![dirt area][dirt_section]
+![sharp curve][sharp_curve]
+ 
+To improve the driving behavior in these cases, I recorded more data in these spots and also recorded some data which teaches the car how to recover from left side and right side. I used these data together with the already provided data to train the model. 
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
-#### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+#### 2. Creation of the Training Set & Training Process
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+To capture good driving behavior, I used the example training dataset(left, centre and right camera images are all used) provided as start point. Here is an example image of center lane driving:
+- Left image
+![left image][left]
 
-![alt text][image1]
+- Cnetre image
+![centre image][centre]
 
-#### 3. Creation of the Training Set & Training Process
+-Right image
+![right image][right]
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
-
-![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to.
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+To augment the data sat, I also flipped images and angles. For example, here is an image that has then been flipped:
+- Original image
+![centre image][centre]
+![centre flipped][centre_flip]
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+After the collection process, I then preprocessed this data by 
+
+- First convert rgb images to grayscale images:
+
+![centre grayscale][centre_grayscale]
+
+- Second only keep region of interested:
+
+![cropped][centre_crop]
+
+
+
+I finally randomly shuffled the data set and put 20% of the data into a validation set. 
+
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The number of epochs was 5. I used an adam optimizer so that manually training the learning rate wasn't necessary.
