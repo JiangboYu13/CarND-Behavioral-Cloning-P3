@@ -139,12 +139,15 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 To capture good driving behavior, I used the example training dataset(left, centre and right camera images are all used) provided as start point. Here is an example image of center lane driving:
 - Left image
+
 ![left image][left]
 
 - Cnetre image
+
 ![centre image][centre]
 
 -Right image
+
 ![right image][right]
 
 I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to.
@@ -152,7 +155,11 @@ I then recorded the vehicle recovering from the left side and right sides of the
 
 To augment the data sat, I also flipped images and angles. For example, here is an image that has then been flipped:
 - Original image
+
 ![centre image][centre]
+
+- Flipped image
+
 ![centre flipped][centre_flip]
 
 
